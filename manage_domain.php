@@ -102,10 +102,10 @@ include_once("header.php");
                 </table>
               </div>
               <p>
-              注 (1)：必须设置一个<strong>www</strong>记录，否则会自动设置一个回源地址为<strong><?=$r["zone_name"]?></strong>的<strong>www</strong>记录
+              注 (1)：必须设置一个<strong>www</strong>记录，否则会自动设置一个回源地址为<strong><?=$r["zone_name"]?></strong>的<strong>www</strong>记录。本记录可不在DNS服务商配置
               </p>
               <p>
-              注 (2)：根据先前的测试(2018-02-15)，目前启用Universal SSL无需再配置CNAME记录，一切以实际情况为准
+              注 (2)：根据先前的测试(2018-02-15)，目前启用Universal SSL无需再专门配置CNAME记录，只需配置所需接入的域名的CNAME记录。证书将在24小时内下发。一切以实际情况为准
               </p>
             </div>
           </div>
