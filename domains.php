@@ -2,9 +2,9 @@
 
 include_once("cf.class.php");
 
-CF::is_login();
+$cloudflare->is_login();
 
-$r=CF::user_lookup();
+$r=$cloudflare->user_lookup();
 
 include_once("header.php");
 ?>

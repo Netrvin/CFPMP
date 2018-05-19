@@ -1,7 +1,7 @@
 <?php
 include_once("cf.class.php");
 
-CF::is_login();
+$cloudflare->is_login();
 
 function msg($s){
     $_SESSION["msg"]=$s;
@@ -13,7 +13,7 @@ if (empty($_POST["domain"])){
     msg("域名不能为空");
 }
 
-$r=CF::zone_set($_POST["domain"],$_POST["domain"],"www:".$_POST["domain"]);
+$r=$cloudflare->zone_set($_POST["domain"],$_POST["domain"],"www:".$_POST["domain"]);
 
 if ($r["result"]=="success"){
     msg("添加成功");

@@ -135,3 +135,5 @@ class CF {
         }
 	}
 }
+
+$cloudflare=new CF();

@@ -2,7 +2,7 @@
 
 include_once("cf.class.php");
 
-CF::is_login();
+$cloudflare->is_login();
 
 function msg($s){
     $_SESSION["msg"]=$s;
@@ -15,7 +15,7 @@ if (empty($_GET["domain"]))
     msg("域名不能为空");
 }
 
-$re=CF::zone_lookup($_GET["domain"]);
+$re=$cloudflare->zone_lookup($_GET["domain"]);
 if ($re["result"]!="success")
 {
     msg("查询失败：".$re["msg"]);
@@ -29,7 +29,7 @@ if ($re["response"]["zone_hosted"]!=true)
     msg("该域名未在".SITE_NAME."接入");
 }
 
-$r=CF::remove_zone_name($re["response"]["zone_name"],$re["response"]);
+$r=$cloudflare->remove_zone_name($re["response"]["zone_name"],$re["response"]);
 
 include_once("header.php");
 ?>
@@ -106,6 +106,9 @@ include_once("header.php");
               </p>
               <p>
               注 (2)：根据先前的测试(2018-02-15)，目前启用Universal SSL无需再专门配置CNAME记录，只需配置所需接入的域名的CNAME记录。证书将在24小时内下发。一切以实际情况为准
+              </p>
+              <p>
+              注 (3)：回源地址以<strong>CNAME</strong>形式填写，暂时不支持<strong>A</strong>记录和<strong>AAAA</strong>记录
               </p>
             </div>
           </div>

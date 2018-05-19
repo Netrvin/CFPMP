@@ -1,7 +1,7 @@
 <?php
 include_once("cf.class.php");
 
-CF::is_login();
+$cloudflare->is_login();
 
 function msg($s){
     $_SESSION["mng_msg"]=$s;
@@ -23,7 +23,7 @@ if (empty($_POST["record"])){
     msg("记录不能为空");
 }
 
-$re=CF::zone_lookup($_POST["domain"]);
+$re=$cloudflare->zone_lookup($_POST["domain"]);
 if ($re["result"]!="success"){
     msg("操作失败：".$re["msg"]);
 }
@@ -34,14 +34,14 @@ if ($re["response"]["zone_hosted"]!=true){
     msg("该域名未在".SITE_NAME."接入");
 }
 
-$r=CF::remove_zone_name($re["response"]["zone_name"],$re["response"]);
+$r=$cloudflare->remove_zone_name($re["response"]["zone_name"],$re["response"]);
 
 if ($_POST["action"]=="delete")
 {
     if (!empty($r["hosted_cnames"][$_POST["record"]]))
     {
         unset($r["hosted_cnames"][$_POST["record"]]);
-        $result=CF::update_record($r["zone_name"],$r["hosted_cnames"]);
+        $result=$cloudflare->update_record($r["zone_name"],$r["hosted_cnames"]);
         if ($result["result"]=="success")
         {
             msg("删除成功");
@@ -56,7 +56,7 @@ if ($_POST["action"]=="delete")
     if (!empty($_POST["value"]))
     {
         $r["hosted_cnames"][$_POST["record"]]=$_POST["value"];
-        $result=CF::update_record($r["zone_name"],$r["hosted_cnames"]);
+        $result=$cloudflare->update_record($r["zone_name"],$r["hosted_cnames"]);
         if ($result["result"]=="success")
         {
             msg("更新成功");

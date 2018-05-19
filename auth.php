@@ -12,7 +12,7 @@ if (Enable_reCAPTCHA)
 {
     if (!empty($_POST["g-recaptcha-response"]))
     {
-        if (!(CF::reCAPTCHA($_POST["g-recaptcha-response"])))
+        if (!($cloudflare->reCAPTCHA($_POST["g-recaptcha-response"])))
         {
             msg("请完成验证码");
         }
@@ -23,7 +23,7 @@ if (Enable_reCAPTCHA)
 
 if ((!empty($_POST["email"]))&&(!empty($_POST["password"])))
 {
-    $r=CF::login($_POST["email"],$_POST["password"]);
+    $r=$cloudflare->login($_POST["email"],$_POST["password"]);
     if ($r["result"]=="success")
     {
         $_SESSION["user_key"]=$r["response"]["user_key"];

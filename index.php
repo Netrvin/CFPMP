@@ -2,7 +2,7 @@
 
 include_once("cf.class.php");
 
-CF::logout();
+$cloudflare->logout();
 
 include_once("header.php");
 ?>
