@@ -76,11 +76,20 @@ class CF {
         }
         $at=$record["@"];
         unset($record["@"]);
+        if ((Enable_A_Record) && (filter_var($at,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))){
+            $at=$at.'.xip.io';
+        }
         $str="";
         foreach ($record as $key => $value){
-            $str.=$key.":".$value.",";
+            if ((Enable_A_Record) && (filter_var($value,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))){
+                $str.=$key.":".$value.".xip.io,";
+            }else{
+                $str.=$key.":".$value.",";
+            }
         }
-        if (empty($str)){$str="www:".$zone_name;}else{
+        if (empty($str)){
+            $str="www:".$zone_name;
+        }else{
             $str=substr($str,0,strlen($str)-1);
         }
         return self::zone_set($zone_name,$at,$str);

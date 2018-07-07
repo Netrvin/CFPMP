@@ -10,3 +10,6 @@ define("SITE_NAME","");
 define("Enable_reCAPTCHA",false);
 define("reCAPTCHA_Site","");
 define("reCAPTCHA_Secret","");
+
+//A记录解析（基于xip.io）
+define("Enable_A_Record",false);

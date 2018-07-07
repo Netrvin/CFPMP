@@ -79,6 +79,9 @@ include_once("header.php");
                         {
                           $is_ssl=true;
                         }
+                        if ((Enable_A_Record) && (filter_var(str_replace('.xip.io','',$set),FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))){
+                          $set=str_replace('.xip.io','',$set);
+                        }
                         echo "<tr>".
                         '<td><button style="display:inline;" class="mdui-btn mdui-btn-icon mdui-shadow-3 ';
                         if ($is_ssl)
@@ -95,7 +98,7 @@ include_once("header.php");
                         }else{
                           echo $r["forward_tos"][$record];
                         }
-                        echo "</td><td>".$set.'</td></tr>';
+                        echo '</td><td>'.$set.'</td></tr>';
 	                  	}
 		                ?>
                   </tbody>
@@ -107,9 +110,11 @@ include_once("header.php");
               <p>
               注 (2)：根据先前的测试(2018-02-15)，目前启用Universal SSL无需再专门配置CNAME记录，只需配置所需接入的域名的CNAME记录。证书将在24小时内下发。一切以实际情况为准
               </p>
+              <?php if (!Enable_A_Record): ?>
               <p>
               注 (3)：回源地址以<strong>CNAME</strong>形式填写，暂时不支持<strong>A</strong>记录和<strong>AAAA</strong>记录
               </p>
+              <?php endif; ?>
             </div>
           </div>
         </div>
