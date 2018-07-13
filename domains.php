@@ -7,6 +7,8 @@ $cloudflare->is_login();
 $r=$cloudflare->user_lookup();
 
 include_once("header.php");
+
+$output = '';
 ?>
 
 <div style="margin-top:25px" class="mdui-container">
