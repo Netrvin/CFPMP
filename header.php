@@ -12,8 +12,8 @@
     <meta name="description" itemprop="description" property="og:description" content="CNAME接入Cloudflare" />
     <meta name="description" content="<?php echo SITE_NAME;?> - Cloudflare Partners, CNAME接入Cloudflare" />
     <meta name="keywords" content="<?php echo SITE_NAME;?>,cloudflare,partner,partners,cname" />
-    <link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/mdui/0.4.0/css/mdui.min.css" />
-    <script src="https://cdnjs.loli.net/ajax/libs/mdui/0.4.0/js/mdui.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@0.4.0/dist/css/mdui.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/mdui@0.4.0/dist/js/mdui.min.js"></script>
     <script src="https://www.recaptcha.net/recaptcha/api.js" async defer></script>
 </head>
 
