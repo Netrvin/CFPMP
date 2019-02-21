@@ -79,8 +79,8 @@ include_once("header.php");
                         {
                           $is_ssl=true;
                         }
-                        if ((Enable_A_Record) && (filter_var(str_replace('.xip.io','',$set),FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))){
-                          $set=str_replace('.xip.io','',$set);
+                        if ((Enable_A_Record) && (filter_var(str_replace('.sslip.io','',$set),FILTER_VALIDATE_IP,FILTER_FLAG_IPV4))){
+                          $set=str_replace('.sslip.io','',$set);
                         }
                         echo "<tr>".
                         '<td><button style="display:inline;" class="mdui-btn mdui-btn-icon mdui-shadow-3 ';
