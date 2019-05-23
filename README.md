@@ -8,4 +8,4 @@ Cloudflare Partner Management Panel
 * reCAPTCHA
 * 设置回源地址为IP（基于sslip.io）（默认关闭此功能）
 
-可用示例：[https://cf.131.re/](https://cf.131.re/)
+可用示例：[https://cf.yuzu.im/](https://cf.yuzu.im/)
