@@ -12,21 +12,21 @@ function msg($s){
 
 if (empty($_GET["domain"]))
 {
-    msg("域名不能为空");
+    msg("Domain name mustn't be empty.");
 }
 
 $re=$cloudflare->zone_lookup($_GET["domain"]);
 if ($re["result"]!="success")
 {
-    msg("查询失败：".$re["msg"]);
+    msg("Failed to fetch data: ".$re["msg"]);
 }
 if ($re["response"]["zone_exists"]!=true)
 {
-    msg("该域名未在Cloudflare接入");
+    msg("This domain isn't managed by Cloudflare.");
 }
 if ($re["response"]["zone_hosted"]!=true)
 {
-    msg("该域名未在".SITE_NAME."接入");
+    msg("This domain isn't managed by ".SITE_NAME.".");
 }
 
 $r=$cloudflare->remove_zone_name($re["response"]["zone_name"],$re["response"]);
@@ -43,7 +43,7 @@ include_once("header.php");
             <a href="./">Cloudflare Partners :
               <?=SITE_NAME?>
           </a> >
-          <a href="domains.php">域名管理</a> >
+          <a href="domains.php">Domain Management</a> >
           <span>
             <?=$r["zone_name"]?>
           </span>
@@ -52,7 +52,7 @@ include_once("header.php");
           </div>
         <div style="float:right">
          <?=$_SESSION["email"]?>. 
-         <a href="./">登出</a>
+         <a href="./">Sign out</a>
         </div>
         </div>
 
@@ -65,9 +65,9 @@ include_once("header.php");
                   <thead>
                     <tr>
                       <th><button style="display:inline;" class="mdui-btn mdui-btn-icon mdui-ripple mdui-shadow-3" onclick="javascript:add_record()"><i class="mdui-icon material-icons">&#xe145;</i></button></th>
-                      <th>记录</th>
-                      <th>CNAME记录</th>
-                      <th>回源地址</th>
+                      <th>Record</th>
+                      <th>CNAME Record</th>
+                      <th>Original address</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -86,7 +86,7 @@ include_once("header.php");
                         '<td><button style="display:inline;" class="mdui-btn mdui-btn-icon mdui-shadow-3 ';
                         if ($is_ssl)
                         {
-                          echo 'mdui-color-grey" mdui-tooltip="{content: \'请勿修改SSL配置记录\'}"';
+                          echo 'mdui-color-grey" mdui-tooltip="{content: \'Do not edit this record.\'}"';
                         }else{
                           echo 'mdui-ripple mdui-color-indigo" onclick="javascript:edit_record(\''.$record.'\',\''.$set.'\')"';
                         }
@@ -105,14 +105,11 @@ include_once("header.php");
                 </table>
               </div>
               <p>
-              注 (1)：必须设置一个<strong>www</strong>记录，否则会自动设置一个回源地址为<strong><?=$r["zone_name"]?></strong>的<strong>www</strong>记录。本记录可不在DNS服务商配置
-              </p>
-              <p>
-              注 (2)：根据先前的测试(2018-02-15)，目前启用Universal SSL无需再专门配置CNAME记录，只需配置所需接入的域名的CNAME记录。证书将在24小时内下发。一切以实际情况为准
+              PS (1): Your must set a <strong>www</strong> record, or the panel will automatically set a <strong>www</strong> record whose original address is <strong><?=$r["zone_name"]?></strong>. You don't need to really set this record if you don't need it.
               </p>
               <?php if (!Enable_A_Record): ?>
               <p>
-              注 (3)：回源地址以<strong>CNAME</strong>形式填写，暂时不支持<strong>A</strong>记录和<strong>AAAA</strong>记录
+              PS (2): The original address mustn't be an IP. It should be a domain name.
               </p>
               <?php endif; ?>
             </div>
@@ -124,41 +121,41 @@ include_once("header.php");
   </div>
 
   <div class="mdui-dialog" id="delete_record">
-  <div class="mdui-dialog-title">删除记录</div>
+  <div class="mdui-dialog-title">Delete record</div>
   <form method="post" action="edit_record.php" autocomplete="off">
     <div class="mdui-dialog-content">
       <input type="hidden" value="delete" name="action" />
      <input type="hidden" value="<?=$r["zone_name"]?>" name="domain" />
-      <input type="hidden" value="" name="record" id="delete_record1" /> 你确定要删除记录
+      <input type="hidden" value="" name="record" id="delete_record1" />Are you sure you want to delete record 
       <strong>
         <span id="delete_record2"></span>
-      </strong>吗？
+      </strong> ?
     </div>
     <div class="mdui-dialog-actions">
-      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
-      <input type="submit" class="mdui-btn mdui-ripple mdui-color-red-900" value="确定" />
+      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
+      <input type="submit" class="mdui-btn mdui-ripple mdui-color-red-900" value="Confirm" />
     </div>
   </form>
 </div>
 
 <div class="mdui-dialog" id="edit_record">
-  <div class="mdui-dialog-title" id="edit_record_title">修改记录</div>
+  <div class="mdui-dialog-title" id="edit_record_title">Edit record</div>
   <form method="post" action="edit_record.php" autocomplete="off">
     <div class="mdui-dialog-content">
       <input type="hidden" value="edit" name="action" />
      <input type="hidden" value="<?=$r["zone_name"]?>" name="domain" />
            <div class="mdui-textfield mdui-textfield-floating-label">
-        <label class="mdui-textfield-label">记录</label>
+        <label class="mdui-textfield-label">Record</label>
         <input class="mdui-textfield-input" id ="edit_record1" name="record" required />
       </div>
      <div class="mdui-textfield mdui-textfield-floating-label">
-        <label class="mdui-textfield-label">回源地址</label>
+        <label class="mdui-textfield-label">Original address</label>
         <input class="mdui-textfield-input" id="edit_record2" name="value" required />
       </div>
     </div>
     <div class="mdui-dialog-actions">
-      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
-      <input type="submit" class="mdui-btn mdui-ripple mdui-color-green mdui-text-color-white" value="确定" />
+      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
+      <input type="submit" class="mdui-btn mdui-ripple mdui-color-green mdui-text-color-white" value="Confirm" />
     </div>
   </form>
 </div>
@@ -173,7 +170,7 @@ include_once("header.php");
   }
 
   function add_record(){
-    document.getElementById("edit_record_title").innerHTML = "添加记录";
+    document.getElementById("edit_record_title").innerHTML = "Add record";
     document.getElementById("edit_record1").value = "";
     document.getElementById("edit_record2").value = "";
     mdui.updateTextFields();
@@ -184,7 +181,7 @@ include_once("header.php");
   }
 
   function edit_record(record,value){
-    document.getElementById("edit_record_title").innerHTML = "修改记录";
+    document.getElementById("edit_record_title").innerHTML = "Edit record";
     document.getElementById("edit_record1").value = record;
     document.getElementById("edit_record2").value = value;
     mdui.updateTextFields();
@@ -205,7 +202,7 @@ include_once("header.php");
     ?>
   </div>
   <div class="mdui-dialog-actions">
-    <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+    <button class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
   </div>
 </div>
 

@@ -10,13 +10,13 @@ function msg($s){
 }
 
 if (empty($_POST["domain"])){
-    msg("域名不能为空");
+    msg("Domain name mustn't be empty.");
 }
 
 $r=$cloudflare->zone_set($_POST["domain"],$_POST["domain"],"www:".$_POST["domain"]);
 
 if ($r["result"]=="success"){
-    msg("添加成功");
+    msg("Success");
 }else{
-    msg("添加失败：".$r["msg"]);
+    msg("Error: ".$r["msg"]);
 }

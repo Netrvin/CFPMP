@@ -10,13 +10,13 @@ function msg($s){
 }
 
 if (empty($_POST["domain"])){
-    msg("域名不能为空");
+    msg("Domain name mustn't be empty.");
 }
 
 $r=$cloudflare->zone_delete($_POST["domain"]);
 
 if ($r["result"]=="success"){
-    msg("删除成功");
+    msg("Deleted successfully.");
 }else{
-    msg("删除失败：".$r["msg"]);
+    msg("Failed to delete: ".$r["msg"]);
 }

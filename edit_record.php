@@ -10,28 +10,28 @@ function msg($s){
 }
 
 if (empty($_POST["domain"])){
-    $_SESSION["msg"]="域名不能为空";
+    $_SESSION["msg"]="Domain name mustn't be empty.";
     header("Location: domains.php");
     exit(0);
 }
 
 if (empty($_POST["action"])){
-    msg("操作不存在");
+    msg("Unknown action.");
 }
 
 if (empty($_POST["record"])){
-    msg("记录不能为空");
+    msg("Record mustn't be empty.");
 }
 
 $re=$cloudflare->zone_lookup($_POST["domain"]);
 if ($re["result"]!="success"){
-    msg("操作失败：".$re["msg"]);
+    msg("Error: ".$re["msg"]);
 }
 if ($re["response"]["zone_exists"]!=true){
-    msg("该域名未在Cloudflare接入");
+    msg("This domain isn't managed by Cloudflare.");
 }
 if ($re["response"]["zone_hosted"]!=true){
-    msg("该域名未在".SITE_NAME."接入");
+    msg("This domain isn't managed by ".SITE_NAME.".");
 }
 
 $r=$cloudflare->remove_zone_name($re["response"]["zone_name"],$re["response"]);
@@ -44,12 +44,12 @@ if ($_POST["action"]=="delete")
         $result=$cloudflare->update_record($r["zone_name"],$r["hosted_cnames"]);
         if ($result["result"]=="success")
         {
-            msg("删除成功");
+            msg("Deleted successfully.");
         }else{
-            msg("删除失败：".$result["msg"]);
+            msg("Failed to delete: ".$result["msg"]);
         }
     }else{
-        msg("记录不存在");
+        msg("This record isn't existed.");
     }
 }elseif($_POST["action"]=="edit")
 {
@@ -59,11 +59,11 @@ if ($_POST["action"]=="delete")
         $result=$cloudflare->update_record($r["zone_name"],$r["hosted_cnames"]);
         if ($result["result"]=="success")
         {
-            msg("更新成功");
+            msg("Updated successfully.");
         }else{
-            msg("更新失败：".$result["msg"]);
+            msg("Failed to update: ".$result["msg"]);
         }
     }else{
-        msg("缺少参数");
+        msg("Missing parameters.");
     }
 }

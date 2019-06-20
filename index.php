@@ -26,17 +26,17 @@ include_once("header.php");
             <form method="post" action="auth.php">
 
               <center>
-                <h2>登入
+                <h2>Sign in
                   <?php echo SITE_NAME; ?>
                 </h2>
               </center>
               <div class="mdui-textfield mdui-textfield-floating-label">
-                <label class="mdui-textfield-label">Cloudflare 邮箱</label>
+                <label class="mdui-textfield-label">Cloudflare Email</label>
                 <input class="mdui-textfield-input" name="email" type="email" />
               </div>
 
               <div class="mdui-textfield mdui-textfield-floating-label">
-                <label class="mdui-textfield-label">Cloudflare 密码</label>
+                <label class="mdui-textfield-label">Cloudflare Password</label>
                 <input class="mdui-textfield-input" name="password" type="password" />
               </div>
 
@@ -46,7 +46,7 @@ include_once("header.php");
 
               <div class="mdui-row-xs-1">
                 <div class="mdui-col">
-                  <input type="submit" class="mdui-btn mdui-btn-block mdui-btn-raised mdui-ripple" value="登录 / 注册" />
+                  <input type="submit" class="mdui-btn mdui-btn-block mdui-btn-raised mdui-ripple" value="Sign in/up" />
                 </div>
               </div>
 
@@ -64,7 +64,7 @@ include_once("header.php");
     <?php if (!empty($_SESSION["login_msg"])){echo $_SESSION["login_msg"];}?>
   </div>
   <div class="mdui-dialog-actions">
-    <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+    <button class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
   </div>
 </div>
 

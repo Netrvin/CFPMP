@@ -14,10 +14,10 @@ if (Enable_reCAPTCHA)
     {
         if (!($cloudflare->reCAPTCHA($_POST["g-recaptcha-response"])))
         {
-            msg("请完成验证码");
+            msg("Please complete the captcha.");
         }
     }else{
-        msg("请完成验证码");
+        msg("Please complete the captcha.");
     }
 }
 
@@ -30,8 +30,8 @@ if ((!empty($_POST["email"]))&&(!empty($_POST["password"])))
         $_SESSION["email"]=$r["response"]["cloudflare_email"];
         header("Location: domains.php");
     }else{
-        msg("登陆 / 注册失败：".$r["msg"]);
+        msg("Failed to sign in/up: ".$r["msg"]);
     }
 }else{
-    msg("用户名和密码不能为空");
+    msg("Username and password mustn't be empty.");
 }

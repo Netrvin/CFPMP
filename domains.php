@@ -20,13 +20,13 @@ $output = '';
          <a href="./">Cloudflare Partners :
             <?=SITE_NAME?>
           </a> >
-          <span>域名管理</span>
+          <span>Domains Management</span>
           <br />
           <br />
         </div>
         <div style="float:right">
          <?=$_SESSION["email"]?>. 
-         <a href="./">登出</a>
+         <a href="./">Sign out</a>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ $output = '';
       <div class="mdui-card mdui-shadow-5">
         <div class="mdui-card-content">
           <div class="mdui-container mdui-typo">
-            <button mdui-dialog="{target: '#add_domain'}" style="display:inline" class="mdui-btn mdui-ripple mdui-shadow-4">添加域名</button>
+            <button mdui-dialog="{target: '#add_domain'}" style="display:inline" class="mdui-btn mdui-ripple mdui-shadow-4">Add domain</button>
 
             <?php if (($r["result"]=="success")&&(!empty($r["response"]["hosted_zones"]))): ?>
             <br />
@@ -43,7 +43,7 @@ $output = '';
               <table class="mdui-table">
                 <thead>
                   <tr>
-                    <th>域名</th>
+                    <th>Domain</th>
                     <th class="mdui-table-col-numeric"></th>
                     <th class="mdui-table-col-numeric"></th>
                   </tr>
@@ -54,8 +54,8 @@ $output = '';
             $output.='
             <tr>
             <td>'.$value.'</td>
-            <td><a href="manage_domain.php?domain='.$value.'">管理</a></td>
-            <td><a href="" onclick="javascript:delete_domain(\''.$value.'\');return false;">删除</a></td>
+            <td><a href="manage_domain.php?domain='.$value.'">Manage</a></td>
+            <td><a href="" onclick="javascript:delete_domain(\''.$value.'\');return false;">Delete</a></td>
             </tr>
             ';
         }
@@ -66,11 +66,11 @@ $output = '';
             </div>
 
             <?php elseif ($r["result"]=="error"): ?>
-            <p>查询失败：
+            <p>Failed to fetch domains: 
               <?=$r["msg"];?>
 
                 <?php else: ?>
-                <p>无域名，赶紧添加一个吧！</p>
+                <p>No domains.</p>
                 <?php endif; ?>
 
           </div>
@@ -82,33 +82,33 @@ $output = '';
 </div>
 
 <div class="mdui-dialog" id="add_domain">
-  <div class="mdui-dialog-title">添加域名</div>
+  <div class="mdui-dialog-title">Add domain</div>
   <form method="post" action="add_domain.php" autocomplete="off">
     <div class="mdui-dialog-content">
       <div class="mdui-textfield mdui-textfield-floating-label">
-        <label class="mdui-textfield-label">域名</label>
+        <label class="mdui-textfield-label">Domain</label>
         <input class="mdui-textfield-input" name="domain" required />
       </div>
     </div>
     <div class="mdui-dialog-actions">
-      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
-      <input type="submit" class="mdui-btn mdui-ripple" value="添加" />
+      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
+      <input type="submit" class="mdui-btn mdui-ripple" value="Add" />
     </div>
   </form>
 </div>
 
 <div class="mdui-dialog" id="delete_domain">
-  <div class="mdui-dialog-title">删除域名</div>
+  <div class="mdui-dialog-title">Delete domain</div>
   <form method="post" action="delete_domain.php" autocomplete="off">
     <div class="mdui-dialog-content">
-      <input type="hidden" value="" name="domain" id="delete_domainname1" /> 你确定要删除域名
+      <input type="hidden" value="" name="domain" id="delete_domainname1" />Are you sure you want to delete domain 
       <strong>
         <span id="delete_domainname2"></span>
-      </strong>吗？
+      </strong> ?
     </div>
     <div class="mdui-dialog-actions">
-      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
-      <input type="submit" class="mdui-btn mdui-ripple" value="确定" />
+      <button type="button" class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
+      <input type="submit" class="mdui-btn mdui-ripple" value="Confirm" />
     </div>
   </form>
 </div>
@@ -122,7 +122,7 @@ $output = '';
     ?>
   </div>
   <div class="mdui-dialog-actions">
-    <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+    <button class="mdui-btn mdui-ripple" mdui-dialog-close>Close</button>
   </div>
 </div>
 

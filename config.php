@@ -3,13 +3,13 @@
 // Cloudflare Partners host key 
 define("HOST_KEY","");
 
-// 站点名称
+// Site name
 define("SITE_NAME","");
 
-// reCAPTCHA配置
+// reCAPTCHA
 define("Enable_reCAPTCHA",false);
 define("reCAPTCHA_Site","");
 define("reCAPTCHA_Secret","");
 
-//A记录解析（基于sslip.io）
+//A Record （Based on sslip.io）
 define("Enable_A_Record",false);
