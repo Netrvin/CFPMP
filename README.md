@@ -10,4 +10,4 @@ English version: [https://github.com/Netrvin/CFPMP/tree/en-v0.2.3](https://githu
 * reCAPTCHA
 * 设置回源地址为IP（基于sslip.io）（默认关闭此功能）
 
-可用示例：[https://cf.yuzu.im/](https://cf.yuzu.im/)
+可用实例：[https://cf.yuzu.im/](https://cf.yuzu.im/)
