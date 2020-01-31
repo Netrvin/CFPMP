@@ -30,7 +30,7 @@ if ((!empty($_POST["email"]))&&(!empty($_POST["password"])))
         $_SESSION["email"]=$r["response"]["cloudflare_email"];
         header("Location: domains.php");
     }else{
-        msg("登陆 / 注册失败：".$r["msg"]);
+        msg("登录 / 注册失败：".$r["msg"]);
     }
 }else{
     msg("用户名和密码不能为空");
