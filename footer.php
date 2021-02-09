@@ -1,13 +1,13 @@
-<br />
+<br/>
 <div class="mdui-typo">
     <center>
         <span>Supported by
             <a>
-                <?php echo SITE_NAME;?>
+                <?php echo SITE_NAME; ?>
             </a>.</span>
-        <br />
+        <br/>
         <span>
-            <a href="https://github.com/Netrvin/CFPMP" target="_blank">CFPMP</a> v0.2.3</span>
+            <a href="https://github.com/Netrvin/CFPMP" target="_blank">CFPMP</a> v0.3.0</span>
     </center>
 </div>
 </body>
