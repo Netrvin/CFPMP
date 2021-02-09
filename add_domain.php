@@ -18,5 +18,9 @@ $r=$cloudflare->zone_set($_POST["domain"],$_POST["domain"],"www:".$_POST["domain
 if ($r["result"]=="success"){
     msg("添加成功");
 }else{
-    msg("添加失败：".$r["msg"]);
+    if (empty($r["msg")){
+        msg("请刷新本页面以确认域名是否添加成功");
+    }else{
+        msg("添加失败：".$r["msg"]);
+    }
 }
