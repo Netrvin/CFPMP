@@ -24,7 +24,7 @@ if ((!empty($_POST["email"])) && (!empty($_POST["password"]))) {
     if ($r["result"] == "success") {
         $_SESSION["user_key"] = $r["response"]["user_key"];
         $_SESSION["email"] = $r["response"]["cloudflare_email"];
-        if (Enable_TXT_Verification) $_SESSION["txt_verification"] = password_hash(Random_String.$_SESSION["email"],PASSWORD_BCRYPT );
+        //if (Enable_TXT_Verification) $_SESSION["txt_verification"] = password_hash(Random_String.$_SESSION["email"],PASSWORD_BCRYPT );
         header("Location: domains.php");
     } else {
         msg("失败：" . $r["msg"]);
