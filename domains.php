@@ -95,6 +95,9 @@ $output = '';
             <p class="mdui-typo" style="text-align: center;">
                 请在此域名添加名称为 cfpmp 的 TXT 记录<code style="display: block;"><?=password_hash(Random_String.$_SESSION["email"],PASSWORD_BCRYPT)?></code>此记录可在验证完毕后删除
             </p>
+            <p class="mdui-typo" style="text-align: center; color: red;">
+                因 Cloudflare Host API 更新，可能无法添加新域名。
+            </p>
             <?php endif; ?>
         </div>
         <div class="mdui-dialog-actions">

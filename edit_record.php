@@ -10,7 +10,7 @@ function msg($s)
     exit(0);
 }
 
-if (empty($_POST["domain"])) {
+if (empty($_POST["zone_id"])) {
     $_SESSION["msg"] = "域名不能为空";
     header("Location: domains.php");
     exit(0);
@@ -20,7 +20,7 @@ if (empty($_POST["action"])) {
     msg("操作不存在");
 }
 
-if (empty($_POST["record"])) {
+if (empty($_POST["record"])&&empty($_POST["record_id"])) {
     msg("记录不能为空");
 }
 
@@ -35,28 +35,35 @@ if ($re["response"]["zone_hosted"] != true) {
     msg("该域名未在" . SITE_NAME . "接入");
 }
 
-$r = $cloudflare->remove_zone_name($re["response"]["zone_name"], $re["response"]);
-
 if ($_POST["action"] == "delete") {
-    if (!empty($r["hosted_cnames"][$_POST["record"]])) {
-        unset($r["hosted_cnames"][$_POST["record"]]);
-        $result = $cloudflare->update_record($r["zone_name"], $r["hosted_cnames"]);
-        if ($result["result"] == "success") {
+    if (!empty($_POST["record_id"])) {
+        $result = $cloudflare->delete_record($_POST["zone_id"], $_POST["record_id"]);
+        if ($result["success"]) {
             msg("删除成功");
         } else {
-            msg("删除失败：" . $result["msg"]);
+            msg("删除失败");
         }
     } else {
-        msg("记录不存在");
+        msg("缺少参数");
     }
 } elseif ($_POST["action"] == "edit") {
-    if (!empty($_POST["value"])) {
-        $r["hosted_cnames"][$_POST["record"]] = $_POST["value"];
-        $result = $cloudflare->update_record($r["zone_name"], $r["hosted_cnames"]);
-        if ($result["result"] == "success") {
+    if (!empty($_POST["record_id"])&&!empty($_POST["value"])&&!empty($_POST["record"])) {
+        $result = $cloudflare->edit_record($_POST["zone_id"], $_POST["record_id"], $_POST["record"], $_POST["value"]);
+        if ($result["success"]) {
             msg("更新成功");
         } else {
-            msg("更新失败：" . $result["msg"]);
+            msg("更新失败：" . $result["errors"][0]["message"]);
+        }
+    } else {
+        msg("缺少参数");
+    }
+} elseif ($_POST["action"] == "add") {
+    if (!empty($_POST["value"])&&!empty($_POST["record"])) {
+        $result = $cloudflare->add_record($_POST["zone_id"], $_POST["record"], $_POST["value"]);
+        if ($result["success"]) {
+            msg("添加成功");
+        } else {
+            msg("添加失败：" . $result["errors"][0]["message"]);
         }
     } else {
         msg("缺少参数");

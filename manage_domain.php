@@ -26,7 +26,12 @@ if ($re["response"]["zone_hosted"] != true) {
     msg("该域名未在" . SITE_NAME . "接入");
 }
 
-$r = $cloudflare->remove_zone_name($re["response"]["zone_name"], $re["response"]);
+$r = $cloudflare->get_proxied_records($_GET["domain"]);
+$zone_id = $cloudflare->get_zone_id($_GET["domain"]);
+
+if (!$r["success"]) {
+    msg("查询失败：" . $r["errors"][0]["message"]);
+}
 
 include_once("header.php");
 ?>
@@ -42,7 +47,7 @@ include_once("header.php");
                     </a> >
                     <a href="domains.php">域名管理</a> >
                     <span>
-            <?= $r["zone_name"] ?>
+            <?= $re['response']["zone_name"] ?>
           </span>
                     <br/>
                     <br/>
@@ -74,29 +79,21 @@ include_once("header.php");
                                 </thead>
                                 <tbody>
                                 <?php
-                                foreach ($r["hosted_cnames"] as $record => $set) {
-                                    $is_ssl = false;
-                                    if (substr($set, strlen($set) - 12) == "comodoca.com") {
-                                        $is_ssl = true;
-                                    }
-                                    if ((Enable_A_Record) && (filter_var(str_replace('.sslip.io', '', $set), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))) {
-                                        $set = str_replace('.sslip.io', '', $set);
+                                foreach ($r["result"] as $index => $data) {
+                                    if ((Enable_A_Record) && (filter_var(str_replace('.sslip.io', '', $data['content']), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))) {
+                                        $data['content'] = str_replace('.sslip.io', '', $data['content']);
                                     }
                                     echo "<tr>" .
                                         '<td><button style="display:inline;" class="mdui-btn mdui-btn-icon mdui-shadow-3 ';
                                     if ($is_ssl) {
                                         echo 'mdui-color-grey" mdui-tooltip="{content: \'请勿修改SSL配置记录\'}"';
                                     } else {
-                                        echo 'mdui-ripple mdui-color-indigo" onclick="javascript:edit_record(\'' . $record . '\',\'' . $set . '\')"';
+                                        echo 'mdui-ripple mdui-color-indigo" onclick="javascript:edit_record(\'' . $data['id'] . '\',\'' . substr($data['name'],0,strlen($data['name'])-strlen($data['zone_name'])-1) . '\',\'' . $data['content'] . '\')"';
                                     }
-                                    echo '><i class="mdui-icon material-icons">&#xe3c9;</i></button><button onclick="javascript:delete_record(\'' . $record . '\')" style="display:inline;" class="mdui-btn mdui-btn-icon mdui-ripple mdui-shadow-3 mdui-color-red-900"><i class="mdui-icon material-icons">&#xe92b;</i></button></td>' .
-                                        "<td>" . $record . "</td><td>";
-                                    if ($is_ssl) {
-                                        echo $set;
-                                    } else {
-                                        echo $r["forward_tos"][$record];
-                                    }
-                                    echo '</td><td>' . $set . '</td></tr>';
+                                    echo '><i class="mdui-icon material-icons">&#xe3c9;</i></button><button onclick="javascript:delete_record(\'' . $data['id'] . '\',\'' . $data['name'] .'\')" style="display:inline;" class="mdui-btn mdui-btn-icon mdui-ripple mdui-shadow-3 mdui-color-red-900"><i class="mdui-icon material-icons">&#xe92b;</i></button></td>' .
+                                        "<td>" . substr($data['name'],0,strlen($data['name'])-strlen($data['zone_name'])-1) . "</td><td>";
+                                    echo $data['name'].'.cdn.cloudflare.net';
+                                    echo '</td><td>' . $data['content'] . '</td></tr>';
                                 }
                                 ?>
                                 </tbody>
@@ -105,10 +102,6 @@ include_once("header.php");
                         <p>
                             注
                             (1)：必须设置一个<strong>www</strong>记录，否则会自动设置一个回源地址为<strong><?= $r["zone_name"] ?></strong>的<strong>www</strong>记录。本记录可不在DNS服务商配置
-                        </p>
-                        <p>
-                            注 (2)：根据先前的测试(2018-02-15)，目前启用Universal
-                            SSL无需再专门配置CNAME记录，只需配置所需接入的域名的CNAME记录。证书将在24小时内下发。一切以实际情况为准
                         </p>
                         <?php if (!Enable_A_Record): ?>
                             <p>
@@ -128,7 +121,9 @@ include_once("header.php");
     <form method="post" action="edit_record.php" autocomplete="off">
         <div class="mdui-dialog-content">
             <input type="hidden" value="delete" name="action"/>
-            <input type="hidden" value="<?= $r["zone_name"] ?>" name="domain"/>
+            <input type="hidden" value="<?= $zone_id ?>" name="zone_id"/>
+            <input type="hidden" value="<?= $re['response']["zone_name"] ?>" name="domain"/>
+            <input type="hidden" value="" id="delete_record_id" name="record_id"/>
             <input type="hidden" value="" name="record" id="delete_record1"/> 你确定要删除记录
             <strong>
                 <span id="delete_record2"></span>
@@ -145,8 +140,10 @@ include_once("header.php");
     <div class="mdui-dialog-title" id="edit_record_title">修改记录</div>
     <form method="post" action="edit_record.php" autocomplete="off">
         <div class="mdui-dialog-content">
-            <input type="hidden" value="edit" name="action"/>
-            <input type="hidden" value="<?= $r["zone_name"] ?>" name="domain"/>
+            <input type="hidden" value="edit" id="edit_record_type" name="action"/>
+            <input type="hidden" value="<?= $zone_id ?>" name="zone_id"/>
+            <input type="hidden" value="<?= $re['response']["zone_name"] ?>" name="domain"/>
+            <input type="hidden" value="" id="edit_record_id" name="record_id"/>
             <div class="mdui-textfield mdui-textfield-floating-label">
                 <label class="mdui-textfield-label">记录</label>
                 <input class="mdui-textfield-input" id="edit_record1" name="record" required/>
@@ -164,9 +161,10 @@ include_once("header.php");
 </div>
 
 <script>
-    function delete_record(record) {
+    function delete_record(id, record) {
         document.getElementById("delete_record2").innerHTML = record;
         document.getElementById("delete_record1").value = record;
+        document.getElementById("delete_record_id").value = id;
         var inst = new mdui.Dialog("#delete_record", {
             history: false
         });
@@ -177,6 +175,8 @@ include_once("header.php");
         document.getElementById("edit_record_title").innerHTML = "添加记录";
         document.getElementById("edit_record1").value = "";
         document.getElementById("edit_record2").value = "";
+        document.getElementById("edit_record_type").value = "add";
+        //document.getElementById("edit_record1").removeAttribute("disabled");
         mdui.updateTextFields();
         var inst = new mdui.Dialog("#edit_record", {
             history: false
@@ -184,10 +184,13 @@ include_once("header.php");
         inst.open();
     }
 
-    function edit_record(record, value) {
+    function edit_record(id, record, value) {
         document.getElementById("edit_record_title").innerHTML = "修改记录";
         document.getElementById("edit_record1").value = record;
+        //document.getElementById("edit_record1").setAttribute("disabled", "true");
         document.getElementById("edit_record2").value = value;
+        document.getElementById("edit_record_id").value = id;
+        document.getElementById("edit_record_type").value = "edit";
         mdui.updateTextFields();
         var inst = new mdui.Dialog("#edit_record", {
             history: false

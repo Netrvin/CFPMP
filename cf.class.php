@@ -23,6 +23,42 @@ class CF
         return json_decode($r, true);
     }
 
+    public function user_api_get($url){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'X-Auth-Email: ' . $_SESSION['email'],
+            'X-Auth-Key: ' . $_SESSION['api_key'],
+        ));
+        $r = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($r, true);
+    }
+
+    public function user_api_post($url, $data, $method = 'POST')
+    {
+        $ch = curl_init();
+        $json = json_encode($data);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'X-Auth-Email: ' . $_SESSION['email'],
+            'X-Auth-Key: ' . $_SESSION['api_key'],
+        ));
+        $r = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($r, true);
+    }
+
     public function login($email, $password)
     {
         $data["act"] = (Allow_Register ? "user_create" : "user_auth");
@@ -83,32 +119,6 @@ class CF
         return self::post($data);
     }
 
-    public function update_record($zone_name, $record)
-    {
-        if (empty($record["@"])) {
-            $record["@"] = $zone_name;
-        }
-        $at = $record["@"];
-        unset($record["@"]);
-        if ((Enable_A_Record) && (filter_var($at, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))) {
-            $at = $at . '.sslip.io';
-        }
-        $str = "";
-        foreach ($record as $key => $value) {
-            if ((Enable_A_Record) && (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))) {
-                $str .= $key . ":" . $value . ".sslip.io,";
-            } else {
-                $str .= $key . ":" . $value . ",";
-            }
-        }
-        if (empty($str)) {
-            $str = "www:" . $zone_name;
-        } else {
-            $str = substr($str, 0, strlen($str) - 1);
-        }
-        return self::zone_set($zone_name, $at, $str);
-    }
-
     public function remove_zone_name($zone_name, $data)
     {
         foreach ($data["hosted_cnames"] as $record => $set) {
@@ -130,6 +140,64 @@ class CF
             unset($data["forward_tos"][$record]);
         }
         return $data;
+    }
+
+    public function get_zone_id($zone_name)
+    {
+        return self::user_api_get("https://api.cloudflare.com/client/v4/zones?name=$zone_name")['result'][0]['id'];
+    }
+
+    public function get_proxied_records($zone_name){
+        $zone_id = self::get_zone_id($zone_name);
+        return self::user_api_get("https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?type=CNAME&proxied=true&page=1&per_page=100&order=name&direction=asc&match=all");
+    }
+
+    public function add_record($zone_id, $name, $content){
+        return self::user_api_post("https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records", [
+            "type" => "CNAME",
+            "name" => $name,
+            "content" => self::add_suffix_for_ip($content),
+            "ttl" => 1,
+            "proxied" => true
+        ]);
+    }
+
+    public function edit_record($zone_id, $record_id, $name, $content){
+        $data = [
+            'type' => 'CNAME',
+            'name' => $name,
+            'content' => self::add_suffix_for_ip($content),
+            'ttl' => 1,
+            "proxied" => true
+        ];
+        return self::user_api_post("https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id", $data, "PUT");
+    }
+
+    public function delete_record($zone_id, $record_id){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id");
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'X-Auth-Email: ' . $_SESSION['email'],
+            'X-Auth-Key: ' . $_SESSION['api_key'],
+        ));
+        $r = curl_exec($ch);
+        curl_close($ch);
+        $data = json_decode($r, true);
+        if ($data['result']['id']==$record_id) $data['success'] = true;
+        else $data['success'] = false;
+        return $data;
+    }
+
+    public function add_suffix_for_ip($content){
+        if (Enable_A_Record&&(filter_var($content, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))){
+            return $content.".sslip.io";
+        }else{
+            return $content;
+        }
     }
 
     public function reCAPTCHA($response)
