@@ -76,11 +76,14 @@ class CF
         if (!empty($_SESSION["user_key"])) {
             unset($_SESSION["user_key"]);
         }
+        if (!empty($_SESSION["api_key"])) {
+            unset($_SESSION["api_key"]);
+        }
     }
 
     public function is_login()
     {
-        if ((empty($_SESSION["email"])) || (empty($_SESSION["user_key"]))) {
+        if ((empty($_SESSION["email"])) || (empty($_SESSION["user_key"])) || (empty($_SESSION["api_key"]))) {
             header("Location: index.php");
             exit(0);
         }
@@ -119,29 +122,6 @@ class CF
         return self::post($data);
     }
 
-    public function remove_zone_name($zone_name, $data)
-    {
-        foreach ($data["hosted_cnames"] as $record => $set) {
-            if (strlen($record) > strlen($zone_name)) {
-                $record2 = substr($record, 0, strlen($record) - strlen($zone_name) - 1);
-            } else {
-                $record2 = "@";
-            }
-            $data["hosted_cnames"][$record2] = $set;
-            unset($data["hosted_cnames"][$record]);
-        }
-        foreach ($data["forward_tos"] as $record => $set) {
-            if (strlen($record) > strlen($zone_name)) {
-                $record2 = substr($record, 0, strlen($record) - strlen($zone_name) - 1);
-            } else {
-                $record2 = "@";
-            }
-            $data["forward_tos"][$record2] = $set;
-            unset($data["forward_tos"][$record]);
-        }
-        return $data;
-    }
-
     public function get_zone_id($zone_name)
     {
         return self::user_api_get("https://api.cloudflare.com/client/v4/zones?name=$zone_name")['result'][0]['id'];
@@ -163,32 +143,18 @@ class CF
     }
 
     public function edit_record($zone_id, $record_id, $name, $content){
-        $data = [
+        return self::user_api_post("https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id", [
             'type' => 'CNAME',
             'name' => $name,
             'content' => self::add_suffix_for_ip($content),
             'ttl' => 1,
             "proxied" => true
-        ];
-        return self::user_api_post("https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id", $data, "PUT");
+        ], "PUT");
     }
 
     public function delete_record($zone_id, $record_id){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id");
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'X-Auth-Email: ' . $_SESSION['email'],
-            'X-Auth-Key: ' . $_SESSION['api_key'],
-        ));
-        $r = curl_exec($ch);
-        curl_close($ch);
-        $data = json_decode($r, true);
-        if ($data['result']['id']==$record_id) $data['success'] = true;
-        else $data['success'] = false;
+        $data = self::user_api_post("https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id", [], "DELETE");
+        $data['result']['id']==$record_id ? $data['success'] = true : $data['success'] = false;
         return $data;
     }
 
