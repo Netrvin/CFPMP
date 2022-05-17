@@ -12,8 +12,8 @@
     <meta name="description" itemprop="description" property="og:description" content="CNAME接入Cloudflare"/>
     <meta name="description" content="<?php echo SITE_NAME; ?> - Cloudflare Partners, CNAME接入Cloudflare"/>
     <meta name="keywords" content="<?php echo SITE_NAME; ?>,cloudflare,partner,partners,cname"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@0.4.0/dist/css/mdui.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/mdui@0.4.0/dist/js/mdui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.0/css/mdui.min.css" integrity="sha512-+yIDKwPJNKAWsLPtQicDlRWuD69Dubc+qedGn9Ln5tfXBEPRPq5gJymgJMcTaSWIOOEjcsGI1j7Ug/p6hUYPJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdui/0.4.0/js/mdui.min.js" integrity="sha512-cKJamv6BNekOACcKvq1s+rbCw1FdUrWSWjnRdHjySEUHBhLfSK4SyPAOgKJticgLbgri9wzIqkhMm4LydXUjAQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://www.recaptcha.net/recaptcha/api.js" async defer></script>
 </head>
 
